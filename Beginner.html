@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30-Day DSA Practice Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151B;
+    --bg-elevated:#191D25;
+    --bg-hover:#1F2530;
+    --border:#272C36;
+    --text-primary:#E8E6E1;
+    --text-muted:#8B93A3;
+    --text-faint:#565D6B;
+    --accent-amber:#E3A857;
+    --accent-amber-dim:rgba(227,168,87,0.14);
+    --accent-teal:#5FBFB3;
+    --accent-teal-dim:rgba(95,191,179,0.14);
+    --diff-easy:#7FB88A;
+    --diff-medium:#E3A857;
+    --diff-hard:#D66B6B;
+    --cf-t1:#8B93A3; --cf-t2:#7FB88A; --cf-t3:#5FBFB3; --cf-t4:#6C93D6; --cf-t5:#A889D6;
+    --radius:10px;
+    --font-mono:'JetBrains Mono',monospace;
+    --font-sans:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background-color:var(--bg);
+    background-image:radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:24px 24px;
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px;}
+
+  header{padding-bottom:22px;border-bottom:1px solid var(--border);margin-bottom:28px;}
+  .title-row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  h1{
+    font-family:var(--font-mono);
+    font-size:1.35rem;
+    letter-spacing:0.02em;
+    margin:0;
+    color:var(--text-primary);
+  }
+  h1 .dim{color:var(--accent-amber);}
+  #counter{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    color:var(--text-muted);
+    white-space:nowrap;
+  }
+  .subtitle{color:var(--text-muted);font-size:0.92rem;margin:8px 0 0;max-width:56ch;}
+
+  .streak-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(14px, 1fr));
+    gap:4px;
+    margin-top:18px;
+  }
+  .streak-sq{
+    aspect-ratio:1;
+    border-radius:3px;
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .streak-sq.filled{background:var(--accent-amber);border-color:var(--accent-amber);}
+
+  .phase-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .phase-pill{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:6px 14px;
+    cursor:pointer;
+  }
+  .phase-pill:hover{color:var(--text-primary);border-color:var(--accent-teal);}
+
+  .intro{font-size:0.9rem;color:var(--text-muted);margin-bottom:32px;padding:14px 16px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);}
+  .intro strong{color:var(--text-primary);font-weight:600;}
+
+  .phase-heading{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--accent-teal);
+    border-bottom:1px solid var(--border);
+    padding-bottom:8px;
+    margin:36px 0 14px;
+  }
+  .phase-heading:first-of-type{margin-top:0;}
+
+  .day-card{
+    background:var(--bg-elevated);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .day-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    padding:13px 14px;
+    background:transparent;
+    border:none;
+    color:inherit;
+    text-align:left;
+    cursor:pointer;
+    font-family:var(--font-sans);
+  }
+  .day-header:hover{background:var(--bg-hover);}
+  .day-check{width:17px;height:17px;flex-shrink:0;accent-color:var(--accent-amber);cursor:pointer;}
+  .day-num{font-family:var(--font-mono);font-size:0.78rem;color:var(--accent-amber);min-width:58px;flex-shrink:0;}
+  .day-title{flex:1;font-size:0.93rem;font-weight:500;color:var(--text-primary);}
+  .review-badge{
+    display:inline-block;margin-left:8px;font-family:var(--font-mono);font-size:0.62rem;
+    text-transform:uppercase;letter-spacing:0.04em;color:var(--accent-teal);
+    background:var(--accent-teal-dim);padding:2px 8px;border-radius:4px;vertical-align:middle;
+  }
+  .chevron{color:var(--text-faint);font-size:0.8rem;flex-shrink:0;transition:transform .15s ease;}
+
+  .day-card.done .day-title{color:var(--text-muted);text-decoration:line-through;text-decoration-color:var(--text-faint);}
+  .day-card.done .day-num{opacity:0.55;}
+
+  .day-body{max-height:0;overflow:hidden;padding:0 14px;transition:max-height .25s ease, padding .25s ease;}
+  .day-body.open{max-height:900px;padding:0 14px 16px;}
+
+  .problem-group{margin-top:14px;}
+  .group-label{
+    display:block;font-family:var(--font-mono);font-size:0.68rem;text-transform:uppercase;
+    letter-spacing:0.08em;color:var(--text-muted);margin-bottom:8px;
+  }
+  .links{display:flex;flex-wrap:wrap;gap:8px;}
+  .problem-link{
+    display:inline-flex;align-items:center;gap:7px;padding:6px 10px;
+    background:var(--bg-hover);border:1px solid var(--border);border-radius:6px;
+    text-decoration:none;font-size:0.83rem;color:var(--text-primary);
+    transition:border-color .15s ease;
+  }
+  .problem-link:hover{border-color:var(--accent-teal);}
+  .badge{font-family:var(--font-mono);font-size:0.66rem;font-weight:600;padding:2px 6px;border-radius:4px;}
+  .badge.easy{background:rgba(127,184,138,.15);color:var(--diff-easy);}
+  .badge.medium{background:var(--accent-amber-dim);color:var(--diff-medium);}
+  .badge.hard{background:rgba(214,107,107,.15);color:var(--diff-hard);}
+  .badge.cf-t1{background:rgba(139,147,163,.15);color:var(--cf-t1);}
+  .badge.cf-t2{background:rgba(127,184,138,.15);color:var(--cf-t2);}
+  .badge.cf-t3{background:rgba(95,191,179,.15);color:var(--cf-t3);}
+  .badge.cf-t4{background:rgba(108,147,214,.15);color:var(--cf-t4);}
+  .badge.cf-t5{background:rgba(168,137,214,.15);color:var(--cf-t5);}
+
+  .cf-note, .extra-note, .review-desc{
+    font-size:0.83rem;color:var(--text-muted);line-height:1.55;
+    padding:9px 11px;background:var(--bg-hover);border-left:2px solid var(--border);
+    border-radius:6px;margin-top:8px;
+  }
+  .extra-note{border-left-color:var(--accent-amber);}
+  .review-desc{border-left-color:var(--accent-teal);margin-top:14px;padding:12px 13px;}
+
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-faint);line-height:1.6;}
+
+  a:focus-visible, button:focus-visible, input:focus-visible{outline:2px solid var(--accent-teal);outline-offset:2px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+
+  @media (max-width:480px){
+    h1{font-size:1.15rem;}
+    .day-title{font-size:0.88rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-row">
+      <h1><span class="dim">30-DAY</span> DSA PRACTICE LOG</h1>
+      <span id="counter">0 / 30 days logged</span>
+    </div>
+    <p class="subtitle">Daily topics paired with LeetCode problems and Codeforces problems or tag filters. Click a day to expand it, check it off as you go.</p>
+    <div class="streak-grid" id="streak"></div>
+    <div class="phase-nav">
+      <button class="phase-pill" data-phase="1">Phase 1 · Days 1–7</button>
+      <button class="phase-pill" data-phase="2">Phase 2 · Days 8–14</button>
+      <button class="phase-pill" data-phase="3">Phase 3 · Days 15–21</button>
+      <button class="phase-pill" data-phase="4">Phase 4 · Days 22–30</button>
+    </div>
+  </header>
+
+  <div class="intro">
+    <strong>LeetCode</strong> and <strong>Codeforces</strong> aren't quite the same kind of practice. LeetCode covers interview-style DSA, including data-structure-design problems that Codeforces doesn't really have. Codeforces is organized by tag + numeric rating (800 = easiest, 3500+ = hardest) rather than fixed lists — so on days without a small set of verified classic problems, you'll see the exact tag and rating range to filter by on <a href="https://codeforces.com/problemset" target="_blank" rel="noopener" style="color:var(--accent-teal)">codeforces.com/problemset</a> instead.
+  </div>
+
+  <div id="day-list"></div>
+
+  <footer>
+    CF rating ↔ LeetCode difficulty, roughly: 800–1200 ≈ Easy · 1300–1700 ≈ Medium · 1800+ ≈ Hard-and-up. Since you already know the concepts, start most new CF topics around 1200–1400 rather than 800 — those actually require the technique instead of just brute force.
+  </footer>
+
+</div>
+
+<script>
+const PHASES = [
+  {id:1, label:"Phase 1 · Days 1–7", title:"Arrays, Two Pointers, Sliding Window, Hashing"},
+  {id:2, label:"Phase 2 · Days 8–14", title:"Linked Lists, Stacks, Queues, Recursion, Backtracking"},
+  {id:3, label:"Phase 3 · Days 15–21", title:"Binary Search, Trees, Heaps, Graphs I"},
+  {id:4, label:"Phase 4 · Days 22–30", title:"Advanced Graphs, DP, Greedy, Tries, Bit Manipulation"}
+];
+
+const DAYS = [
+{day:1, phase:1, type:"topic", title:"Arrays I — Basics & Prefix Sums",
+ lc:[{n:"Two Sum",u:"https://leetcode.com/problems/two-sum/",d:"easy"},
+     {n:"Best Time to Buy and Sell Stock",u:"https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",d:"easy"},
+     {n:"Product of Array Except Self",u:"https://leetcode.com/problems/product-of-array-except-self/",d:"medium"},
+     {n:"Maximum Subarray",u:"https://leetcode.com/problems/maximum-subarray/",d:"medium"},
+     {n:"Contains Duplicate",u:"https://leetcode.com/problems/contains-duplicate/",d:"easy"}],
+ cf:[{n:"4A · Watermelon",u:"https://codeforces.com/problemset/problem/4/A",r:800},
+     {n:"1A · Theatre Square",u:"https://codeforces.com/problemset/problem/1/A",r:1000},
+     {n:"282A · Bit++",u:"https://codeforces.com/problemset/problem/282/A",r:800},
+     {n:"25A · IQ Test",u:"https://codeforces.com/problemset/problem/25/A",r:1300}]},
+
+{day:2, phase:1, type:"topic", title:"Arrays II — Sorting & In-place Manipulation",
+ lc:[{n:"Sort Colors",u:"https://leetcode.com/problems/sort-colors/",d:"medium"},
+     {n:"Merge Intervals",u:"https://leetcode.com/problems/merge-intervals/",d:"medium"},
+     {n:"Insert Interval",u:"https://leetcode.com/problems/insert-interval/",d:"medium"},
+     {n:"Rotate Array",u:"https://leetcode.com/problems/rotate-array/",d:"medium"},
+     {n:"Next Permutation",u:"https://leetcode.com/problems/next-permutation/",d:"medium"}],
+ cf:[{n:"231A · Team",u:"https://codeforces.com/problemset/problem/231/A",r:800}],
+ cfNote:"Beyond this, filter tag \"sortings\", rating 800–1400."},
+
+{day:3, phase:1, type:"topic", title:"Two Pointers",
+ lc:[{n:"Valid Palindrome",u:"https://leetcode.com/problems/valid-palindrome/",d:"easy"},
+     {n:"3Sum",u:"https://leetcode.com/problems/3sum/",d:"medium"},
+     {n:"Container With Most Water",u:"https://leetcode.com/problems/container-with-most-water/",d:"medium"},
+     {n:"Trapping Rain Water",u:"https://leetcode.com/problems/trapping-rain-water/",d:"hard"},
+     {n:"Sort Array By Parity",u:"https://leetcode.com/problems/sort-array-by-parity/",d:"easy"}],
+ cf:[], cfNote:"CF rarely names this pattern in the title — filter tag \"two pointers\", rating 1000–1600."},
+
+{day:4, phase:1, type:"topic", title:"Sliding Window (Fixed Size)",
+ lc:[{n:"Maximum Average Subarray I",u:"https://leetcode.com/problems/maximum-average-subarray-i/",d:"easy"},
+     {n:"Permutation in String",u:"https://leetcode.com/problems/permutation-in-string/",d:"medium"},
+     {n:"Find All Anagrams in a String",u:"https://leetcode.com/problems/find-all-anagrams-in-a-string/",d:"medium"},
+     {n:"Sliding Window Maximum",u:"https://leetcode.com/problems/sliding-window-maximum/",d:"hard"},
+     {n:"Repeated DNA Sequences",u:"https://leetcode.com/problems/repeated-dna-sequences/",d:"medium"}],
+ cf:[], cfNote:"Filed under \"two pointers\" on CF too — rating 1200–1700."},
+
+{day:5, phase:1, type:"topic", title:"Sliding Window (Variable Size)",
+ lc:[{n:"Longest Substring Without Repeating Characters",u:"https://leetcode.com/problems/longest-substring-without-repeating-characters/",d:"medium"},
+     {n:"Minimum Window Substring",u:"https://leetcode.com/problems/minimum-window-substring/",d:"hard"},
+     {n:"Longest Repeating Character Replacement",u:"https://leetcode.com/problems/longest-repeating-character-replacement/",d:"medium"},
+     {n:"Fruit Into Baskets",u:"https://leetcode.com/problems/fruit-into-baskets/",d:"medium"},
+     {n:"Subarray Product Less Than K",u:"https://leetcode.com/problems/subarray-product-less-than-k/",d:"medium"}],
+ cf:[], cfNote:"Tag \"two pointers\", rating 1200–1700."},
+
+{day:6, phase:1, type:"topic", title:"Hashing",
+ lc:[{n:"Group Anagrams",u:"https://leetcode.com/problems/group-anagrams/",d:"medium"},
+     {n:"Top K Frequent Elements",u:"https://leetcode.com/problems/top-k-frequent-elements/",d:"medium"},
+     {n:"Longest Consecutive Sequence",u:"https://leetcode.com/problems/longest-consecutive-sequence/",d:"medium"},
+     {n:"Subarray Sum Equals K",u:"https://leetcode.com/problems/subarray-sum-equals-k/",d:"medium"},
+     {n:"Valid Sudoku",u:"https://leetcode.com/problems/valid-sudoku/",d:"medium"}],
+ cf:[{n:"4C · Registration System",u:"https://codeforces.com/problemset/problem/4/C",r:1000}],
+ cfNote:"Beyond this, filter tag \"hashing\", rating 1200–1700."},
+
+{day:7, phase:1, type:"review",
+ title:"Review + Timed Mock",
+ desc:"Pick 4–5 mediums at random from Days 1–6, mixing topics so you don't know the pattern in advance. 45 min per problem. Redo anything you got wrong or peeked at."},
+
+{day:8, phase:2, type:"topic", title:"Linked Lists I — Basics",
+ lc:[{n:"Reverse Linked List",u:"https://leetcode.com/problems/reverse-linked-list/",d:"easy"},
+     {n:"Merge Two Sorted Lists",u:"https://leetcode.com/problems/merge-two-sorted-lists/",d:"easy"},
+     {n:"Linked List Cycle",u:"https://leetcode.com/problems/linked-list-cycle/",d:"easy"},
+     {n:"Remove Nth Node From End of List",u:"https://leetcode.com/problems/remove-nth-node-from-end-of-list/",d:"medium"},
+     {n:"Middle of the Linked List",u:"https://leetcode.com/problems/middle-of-the-linked-list/",d:"easy"}],
+ cfUnavailable:true,
+ cfNote:"Linked-list manipulation is an interview/ADT topic — Codeforces doesn't really have equivalents. Stick to LeetCode for this one."},
+
+{day:9, phase:2, type:"topic", title:"Linked Lists II — Advanced",
+ lc:[{n:"Reorder List",u:"https://leetcode.com/problems/reorder-list/",d:"medium"},
+     {n:"Merge k Sorted Lists",u:"https://leetcode.com/problems/merge-k-sorted-lists/",d:"hard"},
+     {n:"Copy List with Random Pointer",u:"https://leetcode.com/problems/copy-list-with-random-pointer/",d:"medium"},
+     {n:"LRU Cache",u:"https://leetcode.com/problems/lru-cache/",d:"medium"},
+     {n:"Add Two Numbers",u:"https://leetcode.com/problems/add-two-numbers/",d:"medium"}],
+ cfUnavailable:true,
+ cfNote:"Same as Day 8 — this is LeetCode/interview territory, not competitive programming."},
+
+{day:10, phase:2, type:"topic", title:"Stacks",
+ lc:[{n:"Valid Parentheses",u:"https://leetcode.com/problems/valid-parentheses/",d:"easy"},
+     {n:"Min Stack",u:"https://leetcode.com/problems/min-stack/",d:"medium"},
+     {n:"Daily Temperatures",u:"https://leetcode.com/problems/daily-temperatures/",d:"medium"},
+     {n:"Evaluate Reverse Polish Notation",u:"https://leetcode.com/problems/evaluate-reverse-polish-notation/",d:"medium"},
+     {n:"Largest Rectangle in Histogram",u:"https://leetcode.com/problems/largest-rectangle-in-histogram/",d:"hard"}],
+ cf:[{n:"71A · Way Too Long Words",u:"https://codeforces.com/problemset/problem/71/A",r:800}],
+ cfNote:"Beyond this, filter tag \"data structures\", rating 1200–1700."},
+
+{day:11, phase:2, type:"topic", title:"Queues & Deques",
+ lc:[{n:"Implement Queue using Stacks",u:"https://leetcode.com/problems/implement-queue-using-stacks/",d:"easy"},
+     {n:"Sliding Window Maximum",u:"https://leetcode.com/problems/sliding-window-maximum/",d:"hard"},
+     {n:"Design Circular Queue",u:"https://leetcode.com/problems/design-circular-queue/",d:"medium"},
+     {n:"Number of Recent Calls",u:"https://leetcode.com/problems/number-of-recent-calls/",d:"easy"},
+     {n:"Task Scheduler",u:"https://leetcode.com/problems/task-scheduler/",d:"medium"}],
+ cf:[], cfNote:"Filter tag \"data structures\", rating 1300–1800."},
+
+{day:12, phase:2, type:"topic", title:"Recursion & Divide and Conquer",
+ lc:[{n:"Pow(x, n)",u:"https://leetcode.com/problems/powx-n/",d:"medium"},
+     {n:"Majority Element",u:"https://leetcode.com/problems/majority-element/",d:"easy"},
+     {n:"Different Ways to Add Parentheses",u:"https://leetcode.com/problems/different-ways-to-add-parentheses/",d:"medium"}],
+ extraNote:"Also implement Merge Sort and Quick Sort from scratch (no library sort) — good recursion practice, no judge link needed.",
+ cf:[], cfNote:"Filter tag \"divide and conquer\", rating 1400–1900."},
+
+{day:13, phase:2, type:"topic", title:"Backtracking",
+ lc:[{n:"Subsets",u:"https://leetcode.com/problems/subsets/",d:"medium"},
+     {n:"Permutations",u:"https://leetcode.com/problems/permutations/",d:"medium"},
+     {n:"Combination Sum",u:"https://leetcode.com/problems/combination-sum/",d:"medium"},
+     {n:"Word Search",u:"https://leetcode.com/problems/word-search/",d:"medium"},
+     {n:"N-Queens",u:"https://leetcode.com/problems/n-queens/",d:"hard"}],
+ cf:[], cfNote:"Not its own tag on CF — filter \"brute force\" or \"dfs and similar\", rating 1300–1700."},
+
+{day:14, phase:2, type:"review", title:"Review + Timed Mock",
+ desc:"Timed mock: 4–5 problems from Days 8–13, mixed topics. Then warm up on Binary Search before tomorrow.",
+ lc:[{n:"Binary Search",u:"https://leetcode.com/problems/binary-search/",d:"easy"},
+     {n:"Search Insert Position",u:"https://leetcode.com/problems/search-insert-position/",d:"easy"}]},
+
+{day:15, phase:3, type:"topic", title:"Binary Search — Search Space Reduction",
+ lc:[{n:"Search in Rotated Sorted Array",u:"https://leetcode.com/problems/search-in-rotated-sorted-array/",d:"medium"},
+     {n:"Find Minimum in Rotated Sorted Array",u:"https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",d:"medium"},
+     {n:"Koko Eating Bananas",u:"https://leetcode.com/problems/koko-eating-bananas/",d:"medium"},
+     {n:"Capacity To Ship Packages Within D Days",u:"https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",d:"medium"},
+     {n:"Median of Two Sorted Arrays",u:"https://leetcode.com/problems/median-of-two-sorted-arrays/",d:"hard"}],
+ cf:[], cfNote:"CF loves \"binary search on the answer\" — a pattern LeetCode underuses. Filter tag \"binary search\", rating 1200–1800."},
+
+{day:16, phase:3, type:"topic", title:"Trees I — Traversals",
+ lc:[{n:"Binary Tree Inorder Traversal",u:"https://leetcode.com/problems/binary-tree-inorder-traversal/",d:"easy"},
+     {n:"Binary Tree Level Order Traversal",u:"https://leetcode.com/problems/binary-tree-level-order-traversal/",d:"medium"},
+     {n:"Maximum Depth of Binary Tree",u:"https://leetcode.com/problems/maximum-depth-of-binary-tree/",d:"easy"},
+     {n:"Symmetric Tree",u:"https://leetcode.com/problems/symmetric-tree/",d:"easy"},
+     {n:"Invert Binary Tree",u:"https://leetcode.com/problems/invert-binary-tree/",d:"easy"}],
+ cf:[], cfNote:"Filter tag \"trees\", rating 1300–1900."},
+
+{day:17, phase:3, type:"topic", title:"Trees II — BST",
+ lc:[{n:"Validate Binary Search Tree",u:"https://leetcode.com/problems/validate-binary-search-tree/",d:"medium"},
+     {n:"Kth Smallest Element in a BST",u:"https://leetcode.com/problems/kth-smallest-element-in-a-bst/",d:"medium"},
+     {n:"Lowest Common Ancestor of a Binary Search Tree",u:"https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",d:"medium"},
+     {n:"Insert into a Binary Search Tree",u:"https://leetcode.com/problems/insert-into-a-binary-search-tree/",d:"medium"},
+     {n:"Convert Sorted Array to Binary Search Tree",u:"https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/",d:"easy"}],
+ cf:[], cfNote:"CF tree problems lean toward trees-as-graphs (rerooting, subtree sums) more than BST logic. Tag \"trees\", rating 1300–1900."},
+
+{day:18, phase:3, type:"topic", title:"Trees III — Advanced",
+ lc:[{n:"Lowest Common Ancestor of a Binary Tree",u:"https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",d:"medium"},
+     {n:"Diameter of Binary Tree",u:"https://leetcode.com/problems/diameter-of-binary-tree/",d:"easy"},
+     {n:"Serialize and Deserialize Binary Tree",u:"https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",d:"hard"},
+     {n:"Binary Tree Maximum Path Sum",u:"https://leetcode.com/problems/binary-tree-maximum-path-sum/",d:"hard"},
+     {n:"Construct Binary Tree from Preorder and Inorder Traversal",u:"https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",d:"medium"}],
+ cf:[], cfNote:"Tag \"trees\", rating 1400–2000."},
+
+{day:19, phase:3, type:"topic", title:"Heaps / Priority Queues",
+ lc:[{n:"Kth Largest Element in an Array",u:"https://leetcode.com/problems/kth-largest-element-in-an-array/",d:"medium"},
+     {n:"Top K Frequent Elements",u:"https://leetcode.com/problems/top-k-frequent-elements/",d:"medium"},
+     {n:"Find Median from Data Stream",u:"https://leetcode.com/problems/find-median-from-data-stream/",d:"hard"},
+     {n:"Merge k Sorted Lists",u:"https://leetcode.com/problems/merge-k-sorted-lists/",d:"hard"},
+     {n:"Task Scheduler",u:"https://leetcode.com/problems/task-scheduler/",d:"medium"}],
+ extraNote:"Redo Top K Frequent, Merge k Lists, and Task Scheduler with a heap this time, even though you've seen them before.",
+ cf:[], cfNote:"No standalone tag — filter \"data structures\" or \"greedy\", rating 1300–1800."},
+
+{day:20, phase:3, type:"topic", title:"Graphs I — BFS/DFS",
+ lc:[{n:"Number of Islands",u:"https://leetcode.com/problems/number-of-islands/",d:"medium"},
+     {n:"Clone Graph",u:"https://leetcode.com/problems/clone-graph/",d:"medium"},
+     {n:"Rotting Oranges",u:"https://leetcode.com/problems/rotting-oranges/",d:"medium"},
+     {n:"Course Schedule",u:"https://leetcode.com/problems/course-schedule/",d:"medium"},
+     {n:"Pacific Atlantic Water Flow",u:"https://leetcode.com/problems/pacific-atlantic-water-flow/",d:"medium"}],
+ cf:[], cfNote:"Filter tag \"graphs\" or \"dfs and similar\", rating 1300–1700."},
+
+{day:21, phase:3, type:"review", title:"Review + Timed Mock",
+ desc:"Mixed timed mock: tree, heap, and graph problems from Days 15–20. Also revisit anything logged as a weak spot from Weeks 1–2."},
+
+{day:22, phase:4, type:"topic", title:"Graphs II — Topological Sort & Union-Find",
+ lc:[{n:"Course Schedule II",u:"https://leetcode.com/problems/course-schedule-ii/",d:"medium"},
+     {n:"Find Eventual Safe States",u:"https://leetcode.com/problems/find-eventual-safe-states/",d:"medium"},
+     {n:"Number of Provinces",u:"https://leetcode.com/problems/number-of-provinces/",d:"medium"},
+     {n:"Accounts Merge",u:"https://leetcode.com/problems/accounts-merge/",d:"medium"},
+     {n:"Minimum Height Trees",u:"https://leetcode.com/problems/minimum-height-trees/",d:"medium"}],
+ cf:[], cfNote:"Filter tag \"dsu\" (disjoint set union) or \"graphs\", rating 1400–1900."},
+
+{day:23, phase:4, type:"topic", title:"Graphs III — Shortest Path",
+ lc:[{n:"Network Delay Time",u:"https://leetcode.com/problems/network-delay-time/",d:"medium"},
+     {n:"Cheapest Flights Within K Stops",u:"https://leetcode.com/problems/cheapest-flights-within-k-stops/",d:"medium"},
+     {n:"Path With Minimum Effort",u:"https://leetcode.com/problems/path-with-minimum-effort/",d:"medium"}],
+ cf:[], cfNote:"Filter tag \"shortest paths\", rating 1500–1900."},
+
+{day:24, phase:4, type:"topic", title:"DP I — 1D",
+ lc:[{n:"Climbing Stairs",u:"https://leetcode.com/problems/climbing-stairs/",d:"easy"},
+     {n:"House Robber",u:"https://leetcode.com/problems/house-robber/",d:"medium"},
+     {n:"House Robber II",u:"https://leetcode.com/problems/house-robber-ii/",d:"medium"},
+     {n:"Coin Change",u:"https://leetcode.com/problems/coin-change/",d:"medium"},
+     {n:"Longest Increasing Subsequence",u:"https://leetcode.com/problems/longest-increasing-subsequence/",d:"medium"}],
+ cf:[{n:"466C · Number of Ways",u:"https://codeforces.com/problemset/problem/466/C",r:1700}],
+ cfNote:"Beyond this, filter tag \"dp\", rating 1200–1700."},
+
+{day:25, phase:4, type:"topic", title:"DP II — Grids & Knapsack",
+ lc:[{n:"Unique Paths",u:"https://leetcode.com/problems/unique-paths/",d:"medium"},
+     {n:"Minimum Path Sum",u:"https://leetcode.com/problems/minimum-path-sum/",d:"medium"},
+     {n:"Partition Equal Subset Sum",u:"https://leetcode.com/problems/partition-equal-subset-sum/",d:"medium"},
+     {n:"Target Sum",u:"https://leetcode.com/problems/target-sum/",d:"medium"}],
+ extraNote:"Also implement 0/1 Knapsack from scratch — it won't show up by that name on judges, but it's the base pattern behind half of this list.",
+ cf:[], cfNote:"Filter tag \"dp\", rating 1400–1900."},
+
+{day:26, phase:4, type:"topic", title:"DP III — Strings",
+ lc:[{n:"Longest Common Subsequence",u:"https://leetcode.com/problems/longest-common-subsequence/",d:"medium"},
+     {n:"Edit Distance",u:"https://leetcode.com/problems/edit-distance/",d:"medium"},
+     {n:"Longest Palindromic Substring",u:"https://leetcode.com/problems/longest-palindromic-substring/",d:"medium"},
+     {n:"Palindromic Substrings",u:"https://leetcode.com/problems/palindromic-substrings/",d:"medium"},
+     {n:"Word Break",u:"https://leetcode.com/problems/word-break/",d:"medium"}],
+ cf:[], cfNote:"Filter tags \"dp\" + \"strings\" together, rating 1500–1900."},
+
+{day:27, phase:4, type:"topic", title:"Greedy",
+ lc:[{n:"Jump Game",u:"https://leetcode.com/problems/jump-game/",d:"medium"},
+     {n:"Jump Game II",u:"https://leetcode.com/problems/jump-game-ii/",d:"medium"},
+     {n:"Gas Station",u:"https://leetcode.com/problems/gas-station/",d:"medium"},
+     {n:"Non-overlapping Intervals",u:"https://leetcode.com/problems/non-overlapping-intervals/",d:"medium"},
+     {n:"Partition Labels",u:"https://leetcode.com/problems/partition-labels/",d:"medium"}],
+ cf:[], cfNote:"One of CF's biggest categories — worth lingering here. Tag \"greedy\", rating 1200–1700."},
+
+{day:28, phase:4, type:"topic", title:"Tries + Bit Manipulation",
+ lc:[{n:"Implement Trie (Prefix Tree)",u:"https://leetcode.com/problems/implement-trie-prefix-tree/",d:"medium"},
+     {n:"Word Search II",u:"https://leetcode.com/problems/word-search-ii/",d:"hard"},
+     {n:"Single Number",u:"https://leetcode.com/problems/single-number/",d:"easy"},
+     {n:"Number of 1 Bits",u:"https://leetcode.com/problems/number-of-1-bits/",d:"easy"},
+     {n:"Counting Bits",u:"https://leetcode.com/problems/counting-bits/",d:"easy"}],
+ cf:[{n:"118A · String Task",u:"https://codeforces.com/problemset/problem/118/A",r:1000}],
+ cfNote:"For actual bitmask problems, filter tag \"bitmasks\", rating 1300–1800."},
+
+{day:29, phase:4, type:"review", title:"Full Mock Interview",
+ desc:"2–3 hard problems, mixed topics, 45–60 min each. Explain your approach out loud or in writing before touching code — that habit matters more than the problems themselves."},
+
+{day:30, phase:4, type:"review", title:"Final Review & Weak Spot Audit",
+ desc:"Re-solve your 3–5 toughest problems from the month, from scratch, no notes. Then write yourself a one-page pattern cheat sheet — one line per pattern: \"when you see X, think Y.\""}
+];
+
+function ratingBadge(r){
+  let cls;
+  if(r<1200) cls='cf-t1';
+  else if(r<1400) cls='cf-t2';
+  else if(r<1600) cls='cf-t3';
+  else if(r<1900) cls='cf-t4';
+  else cls='cf-t5';
+  return '<span class="badge '+cls+'">'+r+'</span>';
+}
+function diffBadge(d){
+  const label = d.charAt(0).toUpperCase()+d.slice(1);
+  return '<span class="badge '+d+'">'+label+'</span>';
+}
+function problemLink(p, isCF){
+  const badge = isCF ? ratingBadge(p.r) : diffBadge(p.d);
+  return '<a class="problem-link" href="'+p.u+'" target="_blank" rel="noopener">'+p.n+badge+'</a>';
+}
+
+function dayCardHTML(day){
+  const dNum = String(day.day).padStart(2,'0');
+  const badgeLabel = day.type==='review' ? '<span class="review-badge">Review</span>' : '';
+  let body = '';
+
+  if(day.desc){
+    body += '<div class="review-desc">'+day.desc+'</div>';
+  }
+  if(day.extraNote){
+    body += '<div class="extra-note">'+day.extraNote+'</div>';
+  }
+  if(day.lc && day.lc.length){
+    const label = day.type==='review' ? 'LeetCode warm-up' : 'LeetCode';
+    body += '<div class="problem-group"><span class="group-label">'+label+'</span><div class="links">'+day.lc.map(p=>problemLink(p,false)).join('')+'</div></div>';
+  }
+  if(day.cfUnavailable){
+    body += '<div class="problem-group"><span class="group-label">Codeforces</span><div class="cf-note">'+day.cfNote+'</div></div>';
+  } else if(day.cf){
+    const cfLinks = day.cf.map(p=>problemLink(p,true)).join('');
+    const note = day.cfNote ? '<div class="cf-note">'+day.cfNote+'</div>' : '';
+    body += '<div class="problem-group"><span class="group-label">Codeforces</span><div class="links">'+cfLinks+'</div>'+note+'</div>';
+  }
+
+  return '<div class="day-card" id="card-'+day.day+'">'+
+    '<button class="day-header" onclick="toggleDayBody('+day.day+')">'+
+      '<input type="checkbox" class="day-check" id="chk-'+day.day+'" onclick="event.stopPropagation(); toggleCheck('+day.day+', this.checked)">'+
+      '<span class="day-num">DAY '+dNum+'</span>'+
+      '<span class="day-title">'+day.title+badgeLabel+'</span>'+
+      '<span class="chevron" id="chev-'+day.day+'">&#9662;</span>'+
+    '</button>'+
+    '<div class="day-body" id="body-'+day.day+'">'+body+'</div>'+
+  '</div>';
+}
+
+function renderStreak(){
+  let html='';
+  for(let i=1;i<=DAYS.length;i++){
+    html += '<div class="streak-sq" id="sq-'+i+'" title="Day '+i+'"></div>';
+  }
+  document.getElementById('streak').innerHTML = html;
+}
+
+function renderDays(){
+  let html='';
+  PHASES.forEach(ph=>{
+    html += '<div class="phase-heading" id="phase-'+ph.id+'">'+ph.label+' — '+ph.title+'</div>';
+    DAYS.filter(d=>d.phase===ph.id).forEach(d=>{ html += dayCardHTML(d); });
+  });
+  document.getElementById('day-list').innerHTML = html;
+}
+
+function toggleDayBody(day){
+  const body = document.getElementById('body-'+day);
+  const chev = document.getElementById('chev-'+day);
+  const open = body.classList.toggle('open');
+  chev.innerHTML = open ? '&#9652;' : '&#9662;';
+}
+
+function toggleCheck(day, checked){
+  document.getElementById('sq-'+day).classList.toggle('filled', checked);
+  document.getElementById('card-'+day).classList.toggle('done', checked);
+  updateCounter();
+}
+
+function updateCounter(){
+  const done = document.querySelectorAll('.day-check:checked').length;
+  document.getElementById('counter').textContent = done + ' / ' + DAYS.length + ' days logged';
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderStreak();
+  renderDays();
+  updateCounter();
+  document.querySelectorAll('.phase-pill').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('phase-'+btn.dataset.phase).scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+});
+</script>
+</body>
+</html>
